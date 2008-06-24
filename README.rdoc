@@ -22,10 +22,11 @@ For example:
     include RDiffMatchPatch::Match
   end
   
-When the entire library has been ported, you can get all the functionality by simply including the RDiffMatchPatch module.
+When the entire library has been ported, you can get all the functionality by simply including the various RDiffMatchPatch modules, once they are implemented.
 
   class String
-    include RDiffMatchPatch
+    include RDiffMatchPatch::Match
+    include RDiffMatchPatch::Patch
   end
   
 == Usage
