@@ -1,8 +1,8 @@
 module RDiffMatchPatch
   module Match
-    @@match_balance = 0.5
+    @match_balance = 0.5
     # At what point is no match declared (0.0 = perfection, 1.0 = very loose)
-    @@match_threshold = 0.5
+    @match_threshold = 0.5
     # The min and max cutoffs used when computing text lengths.
     MATCH_MIN_LENGTH = 100
     MATCH_MAX_LENGTH = 1000
@@ -31,12 +31,19 @@ module RDiffMatchPatch
       end
     end
 
-    def match_threshold=(match_threshold); @@match_threshold = match_threshold; end
-    def match_balance=(match_balance); @@match_balance = match_balance; end
-    
-    def match_threshold; @@match_threshold; end
-    def match_balance; @@match_balance; end
-    
+    def self.included(base)
+      base.instance_variable_set('@match_balance', @match_balance)
+      base.instance_variable_set('@match_threshold', @match_threshold)
+      
+      base.class_eval <<-EOF
+        def self.match_balance; @match_balance; end
+        def self.match_threshold; @match_threshold; end
+        
+        def self.match_balance=(mb); @match_balance = mb; end
+        def self.match_threshold=(mt); @match_threshold = mt; end
+      EOF
+    end
+
 private    
     # Locate the best instance of 'pattern' in 'text' near 'loc' using the
     # Bitap algorithm.
@@ -56,7 +63,7 @@ private
       score_text_length = [score_text_length, MATCH_MIN_LENGTH].max
       score_text_length = [score_text_length, MATCH_MAX_LENGTH].min
       # Highest score beyond which we give up.
-      score_threshold = @@match_threshold
+      score_threshold = self.class.match_threshold
       best_loc = text.index(pattern, loc)
       unless best_loc.nil?
         score_threshold = [score_threshold, match_bitap_score(score_text_length, pattern, loc, 0, best_loc)].min
@@ -132,6 +139,14 @@ private
       return best_loc
     end
 
+    def match_alphabet(pattern)
+      alphabets = {}
+      pattern.each_byte {|x| alphabets[x.chr] = 0}
+      (0...pattern.length).each { |i| alphabets[pattern[i].chr] |= 1 << (pattern.length - i - 1) }
+
+      alphabets
+    end
+
     # Compute and return the score for a match with e errors and x location.
     # Accesses loc, score_text_length and pattern through being a closure.
     #
@@ -143,17 +158,8 @@ private
     #  Overall score for match.
     def match_bitap_score(score_text_length, pattern, loc, e, x)
       d = (loc - x).abs.to_f
-      return (e.to_f / pattern.length.to_f / @@match_balance) + 
-              (d / score_text_length.to_f / (1.0 - @@match_balance))
-    end
-
-
-    def match_alphabet(pattern)
-      alphabets = {}
-      pattern.each_byte {|x| alphabets[x.chr] = 0}
-      (0...pattern.length).each { |i| alphabets[pattern[i].chr] |= 1 << (pattern.length - i - 1) }
-
-      alphabets
+      return (e.to_f / pattern.length.to_f / self.class.match_balance) + 
+              (d / score_text_length.to_f / (1.0 - self.class.match_balance))
     end
   end
 end    

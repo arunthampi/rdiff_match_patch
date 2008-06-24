@@ -1,8 +1,14 @@
 require File.dirname(__FILE__) + '/../spec_helper.rb'
 
 describe "match_alphabet" do
+  before(:all) do
+    class Dummy
+      include RDiffMatchPatch::Match
+    end
+  end
+  
   it "should be able to generate the correct hashmap for a string with unique characters" do
-    bitmask = match_alphabet("abc")
+    bitmask = Dummy.new.send('match_alphabet', "abc")
     
     bitmask.keys.size.should == 3
     bitmask['a'].should == 4
@@ -11,7 +17,7 @@ describe "match_alphabet" do
   end
 
   it "should be able to generate the correct hashmap for a string with duplicate characters" do
-    bitmask = match_alphabet("abcaba")
+    bitmask = Dummy.new.send('match_alphabet', "abcaba")
     
     bitmask.keys.size.should == 3
     bitmask['a'].should == 37

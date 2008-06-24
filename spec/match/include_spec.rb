@@ -9,6 +9,7 @@ describe "Including the RDiffMatchPatch module as part of a class" do
   
   it "should add fuzzy_match as an instance method of that class" do
     String.new.methods.include?('fuzzy_match').should == true
+    String.methods.include?('fuzzy_match').should == false
   end
   
   it "should be able to fuzzy match a string correctly" do
