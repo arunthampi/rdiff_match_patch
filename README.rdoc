@@ -1,0 +1,44 @@
+= RDiffMatchPatch
+
+This is a Ruby port of Google's DiffMatchPatch library (originally written by Neil Fraser http://neil.fraser.name) http://code.google.com/p/google-diff-match-patch/
+
+== Installation from GitHub Gems
+
+  sudo gem install arunthampi-rdiff_match_patch --source=http://gems.github.com
+  
+== Installation from Source (More reliable)
+  git clone git://github.com/arunthampi/rdiff_match_patch.git
+  cd rdiff_match_patch
+  rake install
+
+== Status
+
+As of now, only the 'match' capabilities of DiffMatchPatch have been implemented. Contributions are welcome to add support for Diff and Patch as well. Matching has been added as a module such as RDiffMatchPatch::Match.
+
+The plan is that if you want only a specific functionality to be mixed in (to the String class for example), then you only include that particular module.
+
+For example:
+  class String
+    include RDiffMatchPatch::Match
+  end
+  
+When the entire library has been ported, you can get all the functionality by simply including the RDiffMatchPatch module.
+
+  class String
+    include RDiffMatchPatch
+  end
+  
+== Usage
+
+The module can be included like so:
+
+  class String
+    include RDiffMatchPatch::Match
+  end
+  
+  
+  "abc".fuzzy_match("abc") # => 0
+  
+  
+
+  
