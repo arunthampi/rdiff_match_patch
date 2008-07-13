@@ -139,6 +139,7 @@ private
       return best_loc
     end
 
+    # Generates a hashmap with an initial set of scores based on the pattern
     def match_alphabet(pattern)
       alphabets = {}
       pattern.each_byte {|x| alphabets[x.chr] = 0}
